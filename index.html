@@ -35,7 +35,7 @@
 
     .section { display: none; }
 
-    /* LD section */
+    /* LD layout */
     #ld {
         display: block;
         max-width: 700px;
@@ -70,29 +70,36 @@
         overflow: hidden;
     }
 
-    /* Hidden typing area */
     #hiddenInput {
         opacity: 0;
         position: absolute;
         left: -9999px;
-        pointer-events: none;
     }
 
-    /* Other sections */
-    textarea {
-        width: 100%;
-        height: 60vh;
+    /* REVIEW SCREEN */
+    #reviewScreen {
+        display: none;
+    }
+
+    .reviewTitle {
+        text-align: center;
+        font-size: 24px;
+        margin-bottom: 10px;
+        opacity: 0.85;
+    }
+
+    .reviewBox {
         background: #0a0a0a;
-        color: #fff;
         border: 1px solid #222;
         border-radius: 12px;
         padding: 14px;
+        margin-bottom: 20px;
+        white-space: pre-wrap;
         font-size: 16px;
-        outline: none;
-        resize: none;
+        line-height: 1.4;
+        min-height: 150px;
     }
 
-    /* Floating letter animation */
     .flyLetter {
         position: absolute;
         color: #fff;
@@ -106,6 +113,19 @@
     @keyframes flyToBox {
         0% { opacity: 1; transform: scale(1) translate(-50%, -50%); }
         100% { opacity: 0; transform: scale(0.2) translate(-50%, -50%); }
+    }
+
+    textarea {
+        width: 100%;
+        height: 60vh;
+        background: #0a0a0a;
+        color: #fff;
+        border: 1px solid #222;
+        border-radius: 12px;
+        padding: 14px;
+        font-size: 16px;
+        outline: none;
+        resize: none;
     }
 </style>
 </head>
@@ -129,9 +149,21 @@
 <!-- LD -->
 <div id="ld" class="section">
     <h1>Lucid Dream Capture</h1>
+
+    <!-- Hidden typer -->
     <textarea id="hiddenInput"></textarea>
 
+    <!-- Big box -->
     <div id="ldBox">LD</div>
+
+    <!-- REVIEW SCREEN -->
+    <div id="reviewScreen">
+        <div class="reviewTitle">Auto-Corrected</div>
+        <div id="correctedBox" class="reviewBox"></div>
+
+        <div class="reviewTitle">Raw Typed</div>
+        <div id="rawBox" class="reviewBox"></div>
+    </div>
 </div>
 
 <!-- TL -->
@@ -153,10 +185,11 @@
 </div>
 
 <script>
-// Switch sections
+// Switching sections
 document.querySelectorAll("button").forEach(btn => {
     btn.addEventListener("click", () => {
         const target = btn.dataset.target;
+
         document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
 
         const chosen = document.getElementById(target);
@@ -171,24 +204,20 @@ document.querySelectorAll("button").forEach(btn => {
     });
 });
 
-// Auto-load LD input
-window.onload = () => {
-    setTimeout(() => hiddenInput.focus(), 10);
-};
+// Auto focus on load
+window.onload = () => setTimeout(() => hiddenInput.focus(), 10);
 
-// Animate typed letters into LD box
-hiddenInput.addEventListener("input", (e) => {
+// Animate typed letters
+hiddenInput.addEventListener("input", () => {
     const char = hiddenInput.value.slice(-1);
     if (!char.trim()) return;
 
     const ldBox = document.getElementById("ldBox");
     const rect = ldBox.getBoundingClientRect();
 
-    // Start at bottom-ish center
     const startX = window.innerWidth / 2;
     const startY = window.innerHeight - 80;
 
-    // Random inside LD box target
     const targetX = rect.left + Math.random() * rect.width;
     const targetY = rect.top + Math.random() * rect.height;
 
@@ -197,22 +226,31 @@ hiddenInput.addEventListener("input", (e) => {
     letter.textContent = char;
     document.body.appendChild(letter);
 
-    // Position at start
     letter.style.left = startX + "px";
     letter.style.top = startY + "px";
 
-    // Force reflow then animate to target
     requestAnimationFrame(() => {
         letter.style.left = targetX + "px";
         letter.style.top = targetY + "px";
     });
 
-    // Remove after animation
     setTimeout(() => letter.remove(), 900);
 });
 
-// Clicking LD box → refocus typing
-ldBox.addEventListener("click", () => hiddenInput.focus());
+// TAP LD → show review screen
+document.getElementById("ldBox").addEventListener("click", () => {
+    const raw = hiddenInput.value;
+    const corrected = raw.replace(/\b(\w+)\b/g, w => {
+        try { return new Intl.Collator().resolvedOptions().locale ? w : w; }
+        catch { return w; }
+    });
+
+    document.getElementById("rawBox").textContent = raw;
+    document.getElementById("correctedBox").textContent = corrected;
+
+    document.getElementById("ldBox").style.display = "none";
+    document.getElementById("reviewScreen").style.display = "block";
+});
 </script>
 
 </body>
