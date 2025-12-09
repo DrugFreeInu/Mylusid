@@ -10,47 +10,47 @@
         margin: 0;
         background: #0a0a0a;
         font-family: Arial, sans-serif;
-        padding: 20px;
         color: #fff;
         overflow: hidden;
     }
 
-    /* MAIN BOX (tap 1 = type, tap 2 = reveal) */
+    /* MAIN DREAM BOX */
     #dreamBox {
         width: 100%;
-        height: 75vh;
+        height: calc(100vh - 80px);
         background: #0a0a0a;
-        border: 1px solid #222;
-        border-radius: 14px;
-        margin-top: 40px;
+        border-top: 1px solid #222;
+        border-bottom: 1px solid #222;
         display: flex;
         justify-content: center;
         align-items: center;
         font-size: 36px;
         letter-spacing: 3px;
-        color: #fff;
         user-select: none;
         position: relative;
         overflow: hidden;
     }
 
-    /* Hidden input (records everything) */
+    /* HIDDEN INPUT */
     #hiddenInput {
         opacity: 0;
         position: absolute;
         left: -9999px;
     }
 
-    /* Review Screen */
+    /* REVIEW SCREEN */
     #reviewScreen {
         display: none;
-        margin-top: 25px;
+        padding: 20px;
+        height: calc(100vh - 100px);
+        overflow-y: auto;
     }
 
     .reviewTitle {
         font-size: 22px;
         margin-bottom: 6px;
         opacity: 0.85;
+        text-align: center;
     }
 
     .reviewBox {
@@ -65,7 +65,30 @@
         margin-bottom: 20px;
     }
 
-    /* Flying letter animation */
+    /* BOTTOM BUTTON BAR */
+    .buttons {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: #111;
+        border-top: 1px solid #222;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+    }
+
+    button {
+        background: #222;
+        border: 1px solid #333;
+        color: #fff;
+        padding: 8px 16px;
+        font-size: 14px;
+        border-radius: 10px;
+        font-weight: bold;
+    }
+
+    /* FLYING LETTER */
     .flyLetter {
         position: absolute;
         color: #fff;
@@ -88,45 +111,52 @@
 <!-- Hidden input -->
 <textarea id="hiddenInput"></textarea>
 
-<!-- Main dream box -->
+<!-- Dream box (tap 1 = typing, tap 2 = review) -->
 <div id="dreamBox">TAP TO BEGIN</div>
 
-<!-- Review screen -->
+<!-- Review mode (after second tap) -->
 <div id="reviewScreen">
     <div class="reviewTitle">Auto-Corrected</div>
     <div id="correctedBox" class="reviewBox"></div>
 
-    <div class="reviewTitle">Raw Text</div>
+    <div class="reviewTitle">Raw Typed</div>
     <div id="rawBox" class="reviewBox"></div>
+</div>
+
+<!-- Bottom buttons -->
+<div class="buttons">
+    <button data-target="ld">LD</button>
+    <button data-target="tl">TL</button>
+    <button data-target="we">WE</button>
+    <button data-target="ml">ML</button>
+    <button data-target="rc">RC</button>
 </div>
 
 <script>
 let firstTap = true;
 
-/* FIRST TAP → Start typing mode */
-document.getElementById("dreamBox").addEventListener("click", () => {
+/* FIRST TAP → typing mode */
+dreamBox.addEventListener("click", () => {
     if (firstTap) {
-        // Switch to typing mode
         firstTap = false;
         hiddenInput.focus();
-        document.getElementById("dreamBox").textContent = ""; 
+        dreamBox.textContent = "";
         return;
     }
 
-    // SECOND TAP → Show review
+    /* SECOND TAP → REVIEW */
     showReview();
 });
 
-/* Animate typed letters */
+/* TYPED LETTER ANIMATION */
 hiddenInput.addEventListener("input", () => {
     const char = hiddenInput.value.slice(-1);
     if (!char.trim()) return;
 
-    const box = document.getElementById("dreamBox");
-    const rect = box.getBoundingClientRect();
+    const rect = dreamBox.getBoundingClientRect();
 
     const startX = window.innerWidth / 2;
-    const startY = window.innerHeight - 80;
+    const startY = window.innerHeight - 100;
 
     const targetX = rect.left + Math.random() * rect.width;
     const targetY = rect.top + Math.random() * rect.height;
@@ -147,26 +177,46 @@ hiddenInput.addEventListener("input", () => {
     setTimeout(() => letter.remove(), 900);
 });
 
-/* Reveal raw + corrected */
+/* REVIEW SCREEN CONTENT */
 function showReview() {
     const raw = hiddenInput.value;
 
-    // VERY BASIC auto-correct (keeps it grounded)
     const corrected = raw
-        .replace(/i\b/g, "I")
+        .replace(/\bi\b/g, "I")
         .replace(/\bim\b/gi, "I'm")
-        .replace(/\bdream\b/gi, "dream")
-        .replace(/\bthta\b/gi, "that");
+        .replace(/\bteh\b/gi, "the")
+        .replace(/\bthsi\b/gi, "this");
 
-    document.getElementById("rawBox").textContent = raw;
-    document.getElementById("correctedBox").textContent = corrected;
+    rawBox.textContent = raw;
+    correctedBox.textContent = corrected;
 
-    document.getElementById("dreamBox").style.display = "none";
-    document.getElementById("reviewScreen").style.display = "block";
+    dreamBox.style.display = "none";
+    reviewScreen.style.display = "block";
 }
 
-/* Auto-focus on load */
-window.onload = () => setTimeout(() => hiddenInput.focus(), 50);
+/* SECTION SWITCH VIA BOTTOM BUTTONS */
+document.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+        const target = btn.dataset.target;
+
+        // Reset LD if returning to it
+        if (target === "ld") {
+            reviewScreen.style.display = "none";
+            dreamBox.style.display = "flex";
+            dreamBox.textContent = "TAP TO BEGIN";
+            hiddenInput.value = "";
+            firstTap = true;
+        } else {
+            reviewScreen.style.display = "block";
+            dreamBox.style.display = "none";
+            rawBox.textContent = "";
+            correctedBox.textContent = "";
+        }
+    });
+});
+
+/* Auto-focus hidden input on load */
+window.onload = () => setTimeout(() => hiddenInput.focus(), 100);
 </script>
 
 </body>
