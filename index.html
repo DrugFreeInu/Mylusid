@@ -24,11 +24,18 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 36px;
-        letter-spacing: 3px;
-        user-select: none;
         position: relative;
         overflow: hidden;
+    }
+
+    /* Matte brown LD label */
+    #ldLabel {
+        color: #1a0f0a;
+        font-size: 42px;
+        font-weight: bold;
+        letter-spacing: 4px;
+        opacity: 0.9;
+        user-select: none;
     }
 
     /* HIDDEN INPUT */
@@ -111,10 +118,12 @@
 <!-- Hidden input -->
 <textarea id="hiddenInput"></textarea>
 
-<!-- Dream box (tap 1 = typing, tap 2 = review) -->
-<div id="dreamBox">TAP TO BEGIN</div>
+<!-- Dream box -->
+<div id="dreamBox">
+    <span id="ldLabel">LD</span>
+</div>
 
-<!-- Review mode (after second tap) -->
+<!-- Review mode -->
 <div id="reviewScreen">
     <div class="reviewTitle">Auto-Corrected</div>
     <div id="correctedBox" class="reviewBox"></div>
@@ -140,7 +149,7 @@ dreamBox.addEventListener("click", () => {
     if (firstTap) {
         firstTap = false;
         hiddenInput.focus();
-        dreamBox.textContent = "";
+        document.getElementById("ldLabel").style.display = "none";
         return;
     }
 
@@ -199,11 +208,10 @@ document.querySelectorAll("button").forEach(btn => {
     btn.addEventListener("click", () => {
         const target = btn.dataset.target;
 
-        // Reset LD if returning to it
         if (target === "ld") {
             reviewScreen.style.display = "none";
             dreamBox.style.display = "flex";
-            dreamBox.textContent = "TAP TO BEGIN";
+            document.getElementById("ldLabel").style.display = "block";
             hiddenInput.value = "";
             firstTap = true;
         } else {
@@ -215,7 +223,7 @@ document.querySelectorAll("button").forEach(btn => {
     });
 });
 
-/* Auto-focus hidden input on load */
+/* Auto-focus */
 window.onload = () => setTimeout(() => hiddenInput.focus(), 100);
 </script>
 
