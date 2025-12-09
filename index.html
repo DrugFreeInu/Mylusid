@@ -6,7 +6,7 @@
 <style>
     body {
         margin: 0;
-        background: #000;
+        background: #0a0a0a; /* flat black */
         font-family: Arial, sans-serif;
         padding: 20px;
     }
@@ -22,9 +22,9 @@
     #ldInput {
         width: 100%;
         height: 60vh;
-        background: #000;
+        background: #0a0a0a; /* matches the flat black */
         color: #fff;
-        border: 1px solid #333;
+        border: 1px solid #222;
         border-radius: 12px;
         padding: 14px;
         font-size: 16px;
@@ -41,13 +41,9 @@
 <textarea id="ldInput" placeholder="Type your dream immediately..."></textarea>
 
 <script>
-// Auto-focus on load — keyboard pops instantly
 window.onload = () => {
     const ldInput = document.getElementById("ldInput");
-
-    setTimeout(() => {
-        ldInput.focus();
-    }, 10);
+    setTimeout(() => ldInput.focus(), 10);
 };
 </script>
 
