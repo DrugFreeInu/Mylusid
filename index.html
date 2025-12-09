@@ -37,14 +37,13 @@
         opacity: 0.7;
     }
 
-    /* Sections hidden by default */
     .section {
         display: none;
     }
 
-    /* LD special — BIG + CENTERED BOX */
+    /* LD Section */
     #ld {
-        display: block; /* show by default */
+        display: block; /* default open */
         max-width: 700px;
         margin: 0 auto;
         padding-top: 40px;
@@ -58,6 +57,7 @@
         font-weight: bold;
     }
 
+    /* Main LD display box */
     #ldBox {
         width: 100%;
         height: 70vh;
@@ -74,7 +74,15 @@
         user-select: none;
     }
 
-    /* Default textareas for other sections */
+    /* Hidden typing area */
+    #hiddenInput {
+        opacity: 0;
+        position: absolute;
+        left: -9999px;
+        pointer-events: none;
+    }
+
+    /* Other section textarea */
     textarea {
         width: 100%;
         height: 60vh;
@@ -107,9 +115,14 @@
     <textarea placeholder="Type here..."></textarea>
 </div>
 
-<!-- LD — matte black box -->
+<!-- LD with hidden typing -->
 <div id="ld" class="section">
     <h1>Lucid Dream Capture</h1>
+
+    <!-- HIDDEN TYPING INPUT -->
+    <textarea id="hiddenInput"></textarea>
+
+    <!-- VISIBLE BOX -->
     <div id="ldBox">LD</div>
 </div>
 
@@ -132,20 +145,35 @@
 </div>
 
 <script>
-// Section switching
+// Switch sections
 document.querySelectorAll("button").forEach(btn => {
     btn.addEventListener("click", () => {
         const target = btn.dataset.target;
 
-        // hide all
-        document.querySelectorAll(".section").forEach(sec => {
-            sec.style.display = "none";
-        });
+        document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
 
-        // show selected
         const chosen = document.getElementById(target);
         chosen.style.display = "block";
+
+        // Focus hidden input ONLY when LD is selected
+        if (target === "ld") {
+            setTimeout(() => document.getElementById("hiddenInput").focus(), 10);
+        } else {
+            // Focus the first textarea in other sections
+            const ta = chosen.querySelector("textarea");
+            if (ta) setTimeout(() => ta.focus(), 10);
+        }
     });
+});
+
+// Auto-focus hidden LD input on load
+window.onload = () => {
+    setTimeout(() => document.getElementById("hiddenInput").focus(), 10);
+};
+
+// Clicking the LD box also focuses hidden input
+document.getElementById("ldBox").addEventListener("click", () => {
+    document.getElementById("hiddenInput").focus();
 });
 </script>
 
