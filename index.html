@@ -6,7 +6,7 @@
 <style>
     body {
         margin: 0;
-        background: #1a0f0a; /* deep matte brown */
+        background: #0a0a0a; /* matte black */
         font-family: Arial, sans-serif;
         padding: 20px;
         color: #fff;
@@ -16,11 +16,12 @@
         display: flex;
         gap: 10px;
         margin-bottom: 20px;
+        justify-content: center;
     }
 
     button {
-        background: #2b1a14;
-        border: 1px solid #3a2a22;
+        background: #111;
+        border: 1px solid #222;
         color: #fff;
         padding: 8px 16px;
         font-size: 14px;
@@ -33,25 +34,46 @@
         opacity: 0.7;
     }
 
-    /* Sections */
     .section {
         display: none;
     }
 
-    h1 {
-        color: #fff;
-        font-size: 20px;
-        margin-bottom: 10px;
-        font-weight: bold;
-        opacity: 0.8;
+    /* LD special — BIG, CENTERED */
+    #ld {
+        display: block; /* open by default */
+        max-width: 700px;
+        margin: 0 auto;
+        padding-top: 40px;
     }
 
+    #ld h1 {
+        text-align: center;
+        font-size: 26px;
+        margin-bottom: 18px;
+        opacity: 0.9;
+    }
+
+    #ld textarea {
+        width: 100%;
+        height: 70vh;
+        background: #0a0a0a; /* matte */
+        color: #fff;
+        border: 1px solid #222;
+        border-radius: 14px;
+        padding: 16px;
+        font-size: 18px;
+        line-height: 1.45;
+        outline: none;
+        resize: none;
+    }
+
+    /* Default section styling */
     textarea {
         width: 100%;
         height: 60vh;
-        background: #1a0f0a;
+        background: #0a0a0a;
         color: #fff;
-        border: 1px solid #3a2a22;
+        border: 1px solid #222;
         border-radius: 12px;
         padding: 14px;
         font-size: 16px;
@@ -71,50 +93,49 @@
     <button data-target="ml">ML</button>
 </div>
 
-<!-- Reality Check -->
+<!-- RC -->
 <div id="rc" class="section">
     <h1>Reality Check</h1>
     <textarea placeholder="Type here..."></textarea>
 </div>
 
-<!-- Lucid Dreams (AUTO OPEN) -->
-<div id="ld" class="section" style="display:block;">
+<!-- LD — BIG + CENTERED -->
+<div id="ld" class="section">
     <h1>Lucid Dream Capture</h1>
     <textarea id="ldInput" placeholder="Type your dream immediately..."></textarea>
 </div>
 
-<!-- Timeline -->
+<!-- TL -->
 <div id="tl" class="section">
     <h1>Timeline</h1>
     <textarea placeholder="Type here..."></textarea>
 </div>
 
-<!-- Whatever / Anything -->
+<!-- WE -->
 <div id="we" class="section">
     <h1>Anything</h1>
     <textarea placeholder="Type here..."></textarea>
 </div>
 
-<!-- Mylu Log -->
+<!-- ML -->
 <div id="ml" class="section">
     <h1>Mylu Log</h1>
     <textarea placeholder="Record your Mylu chats..."></textarea>
 </div>
 
 <script>
-// Switch sections
+// Section switching
 document.querySelectorAll("button").forEach(btn => {
     btn.addEventListener("click", () => {
         const target = btn.dataset.target;
 
-        // hide all
-        document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
+        document.querySelectorAll(".section").forEach(sec => {
+            sec.style.display = "none";
+        });
 
-        // show only selected
         const chosen = document.getElementById(target);
         chosen.style.display = "block";
 
-        // focus the textarea of that section
         const text = chosen.querySelector("textarea");
         if (text) setTimeout(() => text.focus(), 10);
     });
@@ -122,8 +143,7 @@ document.querySelectorAll("button").forEach(btn => {
 
 // Auto-focus LD on load
 window.onload = () => {
-    const ldInput = document.getElementById("ldInput");
-    setTimeout(() => ldInput.focus(), 10);
+    setTimeout(() => document.getElementById("ldInput").focus(), 10);
 };
 </script>
 
