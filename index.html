@@ -8,13 +8,13 @@
 <style>
     body {
         margin: 0;
-        background: #0a0a0a; /* matte black */
+        background: #0a0a0a;
         font-family: Arial, sans-serif;
         padding: 20px;
         color: #fff;
+        overflow-x: hidden;
     }
 
-    /* Button Row */
     .buttons {
         display: flex;
         gap: 10px;
@@ -33,20 +33,15 @@
         font-weight: bold;
     }
 
-    button:active {
-        opacity: 0.7;
-    }
+    .section { display: none; }
 
-    .section {
-        display: none;
-    }
-
-    /* LD Section */
+    /* LD section */
     #ld {
-        display: block; /* default open */
+        display: block;
         max-width: 700px;
         margin: 0 auto;
         padding-top: 40px;
+        position: relative;
     }
 
     #ld h1 {
@@ -57,7 +52,6 @@
         font-weight: bold;
     }
 
-    /* Main LD display box */
     #ldBox {
         width: 100%;
         height: 70vh;
@@ -72,6 +66,8 @@
         font-weight: bold;
         letter-spacing: 3px;
         user-select: none;
+        position: relative;
+        overflow: hidden;
     }
 
     /* Hidden typing area */
@@ -82,7 +78,7 @@
         pointer-events: none;
     }
 
-    /* Other section textarea */
+    /* Other sections */
     textarea {
         width: 100%;
         height: 60vh;
@@ -92,9 +88,24 @@
         border-radius: 12px;
         padding: 14px;
         font-size: 16px;
-        line-height: 1.4;
         outline: none;
         resize: none;
+    }
+
+    /* Floating letter animation */
+    .flyLetter {
+        position: absolute;
+        color: #fff;
+        font-size: 22px;
+        pointer-events: none;
+        opacity: 1;
+        transform: translate(-50%, -50%);
+        animation: flyToBox 0.8s ease-out forwards;
+    }
+
+    @keyframes flyToBox {
+        0% { opacity: 1; transform: scale(1) translate(-50%, -50%); }
+        100% { opacity: 0; transform: scale(0.2) translate(-50%, -50%); }
     }
 </style>
 </head>
@@ -115,14 +126,11 @@
     <textarea placeholder="Type here..."></textarea>
 </div>
 
-<!-- LD with hidden typing -->
+<!-- LD -->
 <div id="ld" class="section">
     <h1>Lucid Dream Capture</h1>
-
-    <!-- HIDDEN TYPING INPUT -->
     <textarea id="hiddenInput"></textarea>
 
-    <!-- VISIBLE BOX -->
     <div id="ldBox">LD</div>
 </div>
 
@@ -149,32 +157,62 @@
 document.querySelectorAll("button").forEach(btn => {
     btn.addEventListener("click", () => {
         const target = btn.dataset.target;
-
         document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
 
         const chosen = document.getElementById(target);
         chosen.style.display = "block";
 
-        // Focus hidden input ONLY when LD is selected
         if (target === "ld") {
-            setTimeout(() => document.getElementById("hiddenInput").focus(), 10);
+            setTimeout(() => hiddenInput.focus(), 10);
         } else {
-            // Focus the first textarea in other sections
             const ta = chosen.querySelector("textarea");
             if (ta) setTimeout(() => ta.focus(), 10);
         }
     });
 });
 
-// Auto-focus hidden LD input on load
+// Auto-load LD input
 window.onload = () => {
-    setTimeout(() => document.getElementById("hiddenInput").focus(), 10);
+    setTimeout(() => hiddenInput.focus(), 10);
 };
 
-// Clicking the LD box also focuses hidden input
-document.getElementById("ldBox").addEventListener("click", () => {
-    document.getElementById("hiddenInput").focus();
+// Animate typed letters into LD box
+hiddenInput.addEventListener("input", (e) => {
+    const char = hiddenInput.value.slice(-1);
+    if (!char.trim()) return;
+
+    const ldBox = document.getElementById("ldBox");
+    const rect = ldBox.getBoundingClientRect();
+
+    // Start at bottom-ish center
+    const startX = window.innerWidth / 2;
+    const startY = window.innerHeight - 80;
+
+    // Random inside LD box target
+    const targetX = rect.left + Math.random() * rect.width;
+    const targetY = rect.top + Math.random() * rect.height;
+
+    const letter = document.createElement("div");
+    letter.className = "flyLetter";
+    letter.textContent = char;
+    document.body.appendChild(letter);
+
+    // Position at start
+    letter.style.left = startX + "px";
+    letter.style.top = startY + "px";
+
+    // Force reflow then animate to target
+    requestAnimationFrame(() => {
+        letter.style.left = targetX + "px";
+        letter.style.top = targetY + "px";
+    });
+
+    // Remove after animation
+    setTimeout(() => letter.remove(), 900);
 });
+
+// Clicking LD box → refocus typing
+ldBox.addEventListener("click", () => hiddenInput.focus());
 </script>
 
 </body>
