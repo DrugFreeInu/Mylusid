@@ -6,9 +6,36 @@
 <style>
     body {
         margin: 0;
-        background: #0a0a0a; /* flat black */
+        background: #1a0f0a; /* deep matte brown */
         font-family: Arial, sans-serif;
         padding: 20px;
+        color: #fff;
+    }
+
+    .buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    button {
+        background: #2b1a14;
+        border: 1px solid #3a2a22;
+        color: #fff;
+        padding: 8px 16px;
+        font-size: 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    button:active {
+        opacity: 0.7;
+    }
+
+    /* Sections */
+    .section {
+        display: none;
     }
 
     h1 {
@@ -19,12 +46,12 @@
         opacity: 0.8;
     }
 
-    #ldInput {
+    textarea {
         width: 100%;
         height: 60vh;
-        background: #0a0a0a; /* matches the flat black */
+        background: #1a0f0a;
         color: #fff;
-        border: 1px solid #222;
+        border: 1px solid #3a2a22;
         border-radius: 12px;
         padding: 14px;
         font-size: 16px;
@@ -36,11 +63,64 @@
 </head>
 <body>
 
-<h1>Lucid Dream Capture</h1>
+<div class="buttons">
+    <button data-target="rc">RC</button>
+    <button data-target="ld">LD</button>
+    <button data-target="tl">TL</button>
+    <button data-target="we">WE</button>
+    <button data-target="ml">ML</button>
+</div>
 
-<textarea id="ldInput" placeholder="Type your dream immediately..."></textarea>
+<!-- Reality Check -->
+<div id="rc" class="section">
+    <h1>Reality Check</h1>
+    <textarea placeholder="Type here..."></textarea>
+</div>
+
+<!-- Lucid Dreams (AUTO OPEN) -->
+<div id="ld" class="section" style="display:block;">
+    <h1>Lucid Dream Capture</h1>
+    <textarea id="ldInput" placeholder="Type your dream immediately..."></textarea>
+</div>
+
+<!-- Timeline -->
+<div id="tl" class="section">
+    <h1>Timeline</h1>
+    <textarea placeholder="Type here..."></textarea>
+</div>
+
+<!-- Whatever / Anything -->
+<div id="we" class="section">
+    <h1>Anything</h1>
+    <textarea placeholder="Type here..."></textarea>
+</div>
+
+<!-- Mylu Log -->
+<div id="ml" class="section">
+    <h1>Mylu Log</h1>
+    <textarea placeholder="Record your Mylu chats..."></textarea>
+</div>
 
 <script>
+// Switch sections
+document.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+        const target = btn.dataset.target;
+
+        // hide all
+        document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
+
+        // show only selected
+        const chosen = document.getElementById(target);
+        chosen.style.display = "block";
+
+        // focus the textarea of that section
+        const text = chosen.querySelector("textarea");
+        if (text) setTimeout(() => text.focus(), 10);
+    });
+});
+
+// Auto-focus LD on load
 window.onload = () => {
     const ldInput = document.getElementById("ldInput");
     setTimeout(() => ldInput.focus(), 10);
