@@ -61,19 +61,10 @@ html, body {
   opacity: 0.9;
   user-select: none;
 }
-
-/* HIDDEN INPUT */
-#hiddenInput {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
 </style>
 </head>
 
 <body>
-
-<textarea id="hiddenInput"></textarea>
 
 <div id="dreamBox">
   <div id="overlay"></div>
@@ -81,22 +72,28 @@ html, body {
 </div>
 
 <script>
-const input = document.getElementById("hiddenInput");
 const box = document.getElementById("dreamBox");
+const prompt = document.getElementById("prompt");
 
 let windX = 0;
 let windY = 0;
 let calmTimer = null;
+let activated = false;
 
-/* tap anywhere to write */
+/* tap to activate writing mode */
 box.addEventListener("click", () => {
-  input.focus();
-  document.getElementById("prompt").style.display = "none";
+  activated = true;
+  prompt.style.display = "none";
 });
 
-/* typing = wind */
-input.addEventListener("input", () => {
-  // each letter = fresh gust
+/* KEYDOWN = WIND */
+document.addEventListener("keydown", (e) => {
+  if (!activated) return;
+
+  // ignore control keys
+  if (e.key.length !== 1) return;
+
+  // each keypress = gust
   windX += (Math.random() - 0.5) * 10;
   windY += (Math.random() - 0.5) * 8;
 
@@ -108,19 +105,15 @@ input.addEventListener("input", () => {
 
   clearTimeout(calmTimer);
 
-  // release = calm
+  // calm when you stop typing
   calmTimer = setTimeout(() => {
     windX *= 0.2;
     windY *= 0.2;
+
     document.documentElement.style.setProperty("--bg-x", `${windX}px`);
     document.documentElement.style.setProperty("--bg-y", `${windY}px`);
   }, 650);
 });
-
-/* auto focus */
-window.onload = () => {
-  setTimeout(() => input.focus(), 200);
-};
 </script>
 
 </body>
