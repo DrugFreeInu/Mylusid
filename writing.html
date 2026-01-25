@@ -7,8 +7,8 @@
 
 <style>
 :root {
-  --wind-x: 0px;
-  --wind-y: 0px;
+  --wind-x: 50vw;
+  --wind-y: 50vh;
 }
 
 html, body {
@@ -20,30 +20,30 @@ html, body {
   overflow: hidden;
 }
 
-/* MAIN WRITING FIELD */
+/* MAIN FIELD */
 #dreamBox {
   position: relative;
   width: 100%;
   height: 100vh;
   background: #000;
   overflow: hidden;
-  transform: translate(var(--wind-x), var(--wind-y));
-  transition: transform 1.6s ease-out;
 }
 
-/* SOFT DARK MATTE (OPTIONAL DEPTH) */
-#overlay {
+/* WIND CURSOR */
+#wind {
   position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(255,255,255,0.03),
-    rgba(0,0,0,0.6)
-  );
-  pointer-events: none;
+  width: 60px;
+  height: 2px;
+  background: rgba(255,255,255,0.6);
+  filter: blur(1px);
+  transform: translate(-50%, -50%);
+  left: var(--wind-x);
+  top: var(--wind-y);
+  transition: left 0.8s ease-out, top 0.8s ease-out, opacity 1s ease-out;
+  opacity: 0.8;
 }
 
-/* CENTER PROMPT */
+/* PROMPT */
 #prompt {
   position: absolute;
   top: 50%;
@@ -60,20 +60,21 @@ html, body {
 <body>
 
 <div id="dreamBox">
-  <div id="overlay"></div>
+  <div id="wind"></div>
   <div id="prompt">WRITE</div>
 </div>
 
 <script>
 const box = document.getElementById("dreamBox");
+const wind = document.getElementById("wind");
 const prompt = document.getElementById("prompt");
 
-let windX = 0;
-let windY = 0;
+let x = window.innerWidth / 2;
+let y = window.innerHeight / 2;
 let calmTimer = null;
 let activated = false;
 
-/* tap to activate */
+/* click to start */
 box.addEventListener("click", () => {
   activated = true;
   prompt.style.display = "none";
@@ -84,23 +85,25 @@ document.addEventListener("keydown", (e) => {
   if (!activated) return;
   if (e.key.length !== 1) return;
 
-  windX += (Math.random() - 0.5) * 6;
-  windY += (Math.random() - 0.5) * 4;
+  // each key = gust
+  x += (Math.random() - 0.5) * 120;
+  y += (Math.random() - 0.5) * 80;
 
-  windX = Math.max(-20, Math.min(20, windX));
-  windY = Math.max(-12, Math.min(12, windY));
+  // bounds
+  x = Math.max(40, Math.min(window.innerWidth - 40, x));
+  y = Math.max(40, Math.min(window.innerHeight - 40, y));
 
-  document.documentElement.style.setProperty("--wind-x", `${windX}px`);
-  document.documentElement.style.setProperty("--wind-y", `${windY}px`);
+  document.documentElement.style.setProperty("--wind-x", `${x}px`);
+  document.documentElement.style.setProperty("--wind-y", `${y}px`);
+
+  wind.style.opacity = 0.9;
 
   clearTimeout(calmTimer);
 
+  // calm
   calmTimer = setTimeout(() => {
-    windX *= 0.15;
-    windY *= 0.15;
-    document.documentElement.style.setProperty("--wind-x", `${windX}px`);
-    document.documentElement.style.setProperty("--wind-y", `${windY}px`);
-  }, 650);
+    wind.style.opacity = 0.3;
+  }, 700);
 });
 </script>
 
