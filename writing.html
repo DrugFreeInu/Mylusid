@@ -6,11 +6,6 @@
 <title>Writing</title>
 
 <style>
-:root {
-  --wind-x: 50vw;
-  --wind-y: 50vh;
-}
-
 html, body {
   margin: 0;
   height: 100%;
@@ -29,18 +24,27 @@ html, body {
   overflow: hidden;
 }
 
-/* WIND CURSOR */
+/* WRITING SURFACE (invisible but focusable) */
+#writer {
+  position: absolute;
+  inset: 0;
+  outline: none;
+  caret-color: rgba(255,255,255,0.4);
+  color: transparent; /* hides typed text */
+}
+
+/* WIND MARK */
 #wind {
   position: absolute;
-  width: 60px;
+  width: 70px;
   height: 2px;
-  background: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.7);
   filter: blur(1px);
   transform: translate(-50%, -50%);
-  left: var(--wind-x);
-  top: var(--wind-y);
-  transition: left 0.8s ease-out, top 0.8s ease-out, opacity 1s ease-out;
-  opacity: 0.8;
+  left: 50%;
+  top: 50%;
+  transition: left 0.7s ease-out, top 0.7s ease-out, opacity 1s ease-out;
+  opacity: 0;
 }
 
 /* PROMPT */
@@ -62,47 +66,40 @@ html, body {
 <div id="dreamBox">
   <div id="wind"></div>
   <div id="prompt">WRITE</div>
+  <div id="writer" contenteditable="true"></div>
 </div>
 
 <script>
 const box = document.getElementById("dreamBox");
+const writer = document.getElementById("writer");
 const wind = document.getElementById("wind");
 const prompt = document.getElementById("prompt");
 
 let x = window.innerWidth / 2;
 let y = window.innerHeight / 2;
 let calmTimer = null;
-let activated = false;
 
-/* click to start */
+/* tap = focus + keyboard */
 box.addEventListener("click", () => {
-  activated = true;
+  writer.focus();
   prompt.style.display = "none";
 });
 
 /* typing = wind */
-document.addEventListener("keydown", (e) => {
-  if (!activated) return;
-  if (e.key.length !== 1) return;
-
-  // each key = gust
+writer.addEventListener("input", () => {
   x += (Math.random() - 0.5) * 120;
   y += (Math.random() - 0.5) * 80;
 
-  // bounds
   x = Math.max(40, Math.min(window.innerWidth - 40, x));
   y = Math.max(40, Math.min(window.innerHeight - 40, y));
 
-  document.documentElement.style.setProperty("--wind-x", `${x}px`);
-  document.documentElement.style.setProperty("--wind-y", `${y}px`);
-
+  wind.style.left = x + "px";
+  wind.style.top = y + "px";
   wind.style.opacity = 0.9;
 
   clearTimeout(calmTimer);
-
-  // calm
   calmTimer = setTimeout(() => {
-    wind.style.opacity = 0.3;
+    wind.style.opacity = 0.25;
   }, 700);
 });
 </script>
