@@ -8,7 +8,7 @@
 <style>
     body {
         margin: 0;
-        background: #0a0a0a;
+        background: #000;
         font-family: Arial, sans-serif;
         color: #fff;
         overflow: hidden;
@@ -18,17 +18,33 @@
     #dreamBox {
         width: 100%;
         height: calc(100vh - 80px);
-        background: #0a0a0a;
+
+        /* BACKGROUND IMAGE */
+        background-image: url("BDC4EBCF-007A-4BB9-819D-BF5A20CD5CB8.png");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+
         border-top: 1px solid #222;
         border-bottom: 1px solid #222;
+
         display: flex;
         justify-content: center;
         align-items: center;
+
         position: relative;
         overflow: hidden;
     }
 
-    /* Matte brown LD label */
+    /* DARK MATTE OVERLAY */
+    #dreamOverlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 0;
+    }
+
+    /* LD LABEL */
     #ldLabel {
         color: #1a0f0a;
         font-size: 42px;
@@ -36,6 +52,8 @@
         letter-spacing: 4px;
         opacity: 0.9;
         user-select: none;
+        position: relative;
+        z-index: 1;
     }
 
     /* HIDDEN INPUT */
@@ -51,6 +69,7 @@
         padding: 20px;
         height: calc(100vh - 100px);
         overflow-y: auto;
+        background: #000;
     }
 
     .reviewTitle {
@@ -104,6 +123,7 @@
         opacity: 1;
         transform: translate(-50%, -50%);
         animation: flyToBox 0.8s ease-out forwards;
+        z-index: 5;
     }
 
     @keyframes flyToBox {
@@ -120,6 +140,7 @@
 
 <!-- Dream box -->
 <div id="dreamBox">
+    <div id="dreamOverlay"></div>
     <span id="ldLabel">LD</span>
 </div>
 
@@ -144,6 +165,12 @@
 <script>
 let firstTap = true;
 
+const dreamBox = document.getElementById("dreamBox");
+const hiddenInput = document.getElementById("hiddenInput");
+const reviewScreen = document.getElementById("reviewScreen");
+const rawBox = document.getElementById("rawBox");
+const correctedBox = document.getElementById("correctedBox");
+
 /* FIRST TAP → typing mode */
 dreamBox.addEventListener("click", () => {
     if (firstTap) {
@@ -152,8 +179,6 @@ dreamBox.addEventListener("click", () => {
         document.getElementById("ldLabel").style.display = "none";
         return;
     }
-
-    /* SECOND TAP → REVIEW */
     showReview();
 });
 
@@ -186,7 +211,7 @@ hiddenInput.addEventListener("input", () => {
     setTimeout(() => letter.remove(), 900);
 });
 
-/* REVIEW SCREEN CONTENT */
+/* REVIEW SCREEN */
 function showReview() {
     const raw = hiddenInput.value;
 
@@ -203,7 +228,7 @@ function showReview() {
     reviewScreen.style.display = "block";
 }
 
-/* SECTION SWITCH VIA BOTTOM BUTTONS */
+/* SECTION SWITCH */
 document.querySelectorAll("button").forEach(btn => {
     btn.addEventListener("click", () => {
         const target = btn.dataset.target;
@@ -223,7 +248,7 @@ document.querySelectorAll("button").forEach(btn => {
     });
 });
 
-/* Auto-focus */
+/* AUTO-FOCUS */
 window.onload = () => setTimeout(() => hiddenInput.focus(), 100);
 </script>
 
