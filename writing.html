@@ -7,8 +7,8 @@
 
 <style>
 :root {
-  --bg-x: 0px;
-  --bg-y: 0px;
+  --wind-x: 0px;
+  --wind-y: 0px;
 }
 
 html, body {
@@ -25,40 +25,33 @@ html, body {
   position: relative;
   width: 100%;
   height: 100vh;
+  background: #000;
   overflow: hidden;
-}
-
-/* WIND-RESPONSIVE BACKGROUND */
-#dreamBox::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: url("BDC4EBCF-007A-4BB9-819D-BF5A20CD5CB8.png");
-  background-size: 110%;
-  background-position: center;
-  background-repeat: no-repeat;
-  transform: translate(var(--bg-x), var(--bg-y));
-  filter: blur(1px);
+  transform: translate(var(--wind-x), var(--wind-y));
   transition: transform 1.6s ease-out;
-  z-index: 0;
 }
 
-/* DARK MATTE */
+/* SOFT DARK MATTE (OPTIONAL DEPTH) */
 #overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.7);
-  z-index: 1;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255,255,255,0.03),
+    rgba(0,0,0,0.6)
+  );
+  pointer-events: none;
 }
 
 /* CENTER PROMPT */
 #prompt {
-  position: relative;
-  z-index: 2;
-  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   font-size: 36px;
   letter-spacing: 4px;
-  opacity: 0.9;
+  opacity: 0.85;
   user-select: none;
 }
 </style>
@@ -80,38 +73,33 @@ let windY = 0;
 let calmTimer = null;
 let activated = false;
 
-/* tap to activate writing mode */
+/* tap to activate */
 box.addEventListener("click", () => {
   activated = true;
   prompt.style.display = "none";
 });
 
-/* KEYDOWN = WIND */
+/* typing = wind */
 document.addEventListener("keydown", (e) => {
   if (!activated) return;
-
-  // ignore control keys
   if (e.key.length !== 1) return;
 
-  // each keypress = gust
-  windX += (Math.random() - 0.5) * 10;
-  windY += (Math.random() - 0.5) * 8;
+  windX += (Math.random() - 0.5) * 6;
+  windY += (Math.random() - 0.5) * 4;
 
-  windX = Math.max(-30, Math.min(30, windX));
-  windY = Math.max(-20, Math.min(20, windY));
+  windX = Math.max(-20, Math.min(20, windX));
+  windY = Math.max(-12, Math.min(12, windY));
 
-  document.documentElement.style.setProperty("--bg-x", `${windX}px`);
-  document.documentElement.style.setProperty("--bg-y", `${windY}px`);
+  document.documentElement.style.setProperty("--wind-x", `${windX}px`);
+  document.documentElement.style.setProperty("--wind-y", `${windY}px`);
 
   clearTimeout(calmTimer);
 
-  // calm when you stop typing
   calmTimer = setTimeout(() => {
-    windX *= 0.2;
-    windY *= 0.2;
-
-    document.documentElement.style.setProperty("--bg-x", `${windX}px`);
-    document.documentElement.style.setProperty("--bg-y", `${windY}px`);
+    windX *= 0.15;
+    windY *= 0.15;
+    document.documentElement.style.setProperty("--wind-x", `${windX}px`);
+    document.documentElement.style.setProperty("--wind-y", `${windY}px`);
   }, 650);
 });
 </script>
